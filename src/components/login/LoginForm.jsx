@@ -1,10 +1,49 @@
 import { Box, Button, TextField, Typography } from '@mui/material'
-import React from 'react'
+import React, { useState } from 'react'
+import api from '../../services/api'
+import { useNavigate } from 'react-router-dom'
 
 function LoginForm() {
+
+    const navigate = useNavigate()
+
+    const[email, setEmail]= useState('')
+    const[password, setPassword]= useState('')
+    const[loading, setLoading] = useState(false)
+    const[error, setError]= useState('')
+
+    const handleSubmit = async (e)=> {
+        e.preventDefault()
+        setLoading(true)
+        setError('')
+
+        try {
+            const response = await api.post('/api/admin/auth/login', {
+                email,
+                password,
+            })
+
+            const { token, user} = response.data
+
+            localStorage.setItem('token', token)
+
+            console.log('logged in user:', user)
+
+            navigate('/')
+            
+        } catch (error) {
+            setError(
+                error.response?.data?.message|| 'Invalid email or password'
+            )
+        } finally{
+            setLoading(false)
+        }
+    }
+
+
     return (
         <>
-            <form>
+            <form onSubmit={handleSubmit}>
                 <Box sx={{ mb: 3 }}>
                     <Typography
                         sx={{
@@ -38,18 +77,28 @@ function LoginForm() {
                     <Typography sx={{ fontSize: 12, mb: 0.5 }}>
                         Email
                     </Typography>
-                    <TextField fullWidth size="small" />
+                    <TextField fullWidth size="small"
+                    value={email}
+                    onChange={(e)=>setEmail(e.target.value)}
+                    required
+                    />
                 </Box>
                 {/* Password */}
                 <Box sx={{ mb: 3 }}>
                     <Typography sx={{ fontSize: 12, mb: 0.5 }}>
                         Password
                     </Typography>
-                    <TextField fullWidth size="small" type="password" />
+                    <TextField fullWidth size="small" type="password" 
+                        value={password}
+                        onChange={(e)=>setPassword(e.target.value)}
+                        required
+                    />
                 </Box>
                 <Button
                     fullWidth
+                    type='sumbit'
                     variant="contained"
+                    disabled= {loading}
                     sx={{
                         height: 42,
                         textTransform: 'none',
@@ -59,7 +108,7 @@ function LoginForm() {
                         bgcolor: '#746be3'
                     }}
                 >
-                    Login
+                    {loading ? 'Logging in...' : 'Login'}
                 </Button>
 
             </form>
