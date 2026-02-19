@@ -7,6 +7,7 @@ import Layout from './layout/Layout'
 import Category from './pages/category/Category'
 import Product from './pages/Product';
 import Setting from './pages/Setting';
+import Login from './pages/login/Login';
 
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
     <>
       <Router>
         <Routes>
+          <Route path='login' element={<Login />} />
           <Route path='/' element= {<Layout></Layout>}>
             <Route index element= {<Dashboard/>}></Route>
             <Route path='category' element= {<Category/>}></Route>

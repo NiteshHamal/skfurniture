@@ -1,7 +1,7 @@
 import { KeyboardArrowDown } from '@mui/icons-material';
 import { Avatar, Box, IconButton, Menu, MenuItem, Typography } from '@mui/material'
 import React, { useState } from 'react'
-import { useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 
 function Navbar() {
@@ -68,7 +68,7 @@ function Navbar() {
                             transformOrigin={{ vertical: "top", horizontal: "right" }}
                         >
                             <MenuItem onClick={handleClose}>Edit Profile</MenuItem>
-                            <MenuItem onClick={handleClose}>Logout</MenuItem>
+                            <MenuItem onClick={handleClose} component={Link} to="/login" selected={location.pathname === '/login'}>Logout</MenuItem>
                         </Menu>
                     </Box>
 
