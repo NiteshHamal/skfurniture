@@ -23,12 +23,16 @@ function LoginForm() {
                 password,
             })
 
-            const { token, user} = response.data.data
+            const {access_token, user} = response.data.data
+          
 
-            localStorage.setItem('token', token)
+            // storage token for future request 
+            localStorage.setItem('token', access_token)
+            
             localStorage.setItem('user', JSON.stringify(user))
 
             console.log('logged in user:', user)
+            console.log('login response:', response.data)
 
             navigate('/')
             
