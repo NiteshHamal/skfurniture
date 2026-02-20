@@ -23,9 +23,10 @@ function LoginForm() {
                 password,
             })
 
-            const { token, user} = response.data
+            const { token, user} = response.data.data
 
             localStorage.setItem('token', token)
+            localStorage.setItem('user', JSON.stringify(user))
 
             console.log('logged in user:', user)
 

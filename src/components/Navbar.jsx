@@ -1,6 +1,6 @@
 import { KeyboardArrowDown } from '@mui/icons-material';
 import { Avatar, Box, IconButton, Menu, MenuItem, Typography } from '@mui/material'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom';
 
 
@@ -9,6 +9,15 @@ function Navbar() {
     const location = useLocation();
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
+
+    const [user, setUser]= useState(null)
+
+    useEffect(() => {
+        const storedUser = localStorage.getItem('user')
+        if (storedUser) {
+            setUser(JSON.parse(storedUser))
+        }
+    }, [])
 
     const handleOpen = (event) => {
         setAnchorEl(event.currentTarget);
@@ -55,8 +64,9 @@ function Navbar() {
                                 '&:hover': { bgcolor: 'rgba(0,0,0,0.04)' }
                             }}>
                             <Avatar sx={{ width: 36, height: 36 }}>
+                                {user?.name?.charAt(0)?.toUpperCase()}
                             </Avatar>
-                            <Typography variant="body1" sx={{ fontWeight: 500 }}>Nitesh</Typography>
+                            <Typography variant="body1" sx={{ fontWeight: 500 }}>{user?.name||'User'}</Typography>
                             <KeyboardArrowDown></KeyboardArrowDown>
                         </IconButton>
 
@@ -68,7 +78,10 @@ function Navbar() {
                             transformOrigin={{ vertical: "top", horizontal: "right" }}
                         >
                             <MenuItem onClick={handleClose}>Edit Profile</MenuItem>
-                            <MenuItem onClick={handleClose} component={Link} to="/login" selected={location.pathname === '/login'}>Logout</MenuItem>
+                            <MenuItem onClick={()=> {
+                                localStorage.clear()
+                                window.location.href='/login'
+                            }}>Logout</MenuItem>
                         </Menu>
                     </Box>
 
