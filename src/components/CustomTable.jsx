@@ -1,7 +1,8 @@
-import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
+import { Edit } from '@mui/icons-material'
+import { Box, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
 import React from 'react'
 
-function CustomTable({ columns, rows }) {
+function CustomTable({ columns, rows, onEdit }) {
     return (
         <>
             <TableContainer component={Paper}>
@@ -28,7 +29,19 @@ function CustomTable({ columns, rows }) {
                                                 overflow: 'hidden',
                                                 textOverflow: 'ellipsis'
                                             }} dangerouslySetInnerHTML={{ __html: row[col.key] }} />
-                                        ) : (
+                                        ) : col.key === 'action' ? (
+                                            <Box sx={{ display: 'flex', gap:1}}>
+                                                {onEdit && (
+                                                    <IconButton
+                                                        size='small'
+                                                        color='primary'
+                                                        onClick={() => onEdit(row)}
+                                                    >
+                                                        <Edit fontSize='small' />
+                                                    </IconButton>
+                                                )}
+                                            </Box>
+                                        ) :(
                                             row[col.key]
                                         )}
                                     </TableCell>

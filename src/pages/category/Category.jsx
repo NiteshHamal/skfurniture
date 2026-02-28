@@ -3,6 +3,7 @@ import { Box, Button, Tab, Tabs, Typography, } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import CustomTable from '../../components/CustomTable'
 import api from '../../services/api'
+import EditModal from '../../components/EditModal'
 import axios from 'axios'
 
 function CustomTabPanel({ children, value, index }) {
@@ -21,6 +22,17 @@ function Category() {
     categories: true,
     subCategories: false,
   });
+
+  //modal State
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalConfig, setModalConfig] = useState({
+    title: '',
+    fields: [],
+    initialData: [],
+    onSave: null,
+    type: ''
+  });
+  const [saving, setSaving] = useState(false);
 
   const handleChange = (event, newValue) => {
     setValue(newValue)
@@ -65,10 +77,82 @@ function Category() {
     fetchCategories()
   }, [])
 
+  // Add this helper function
+  const stripHtmlTags = (html) => {
+    if (!html) return '';
+    const tmp = document.createElement('div');
+    tmp.innerHTML = html;
+    return tmp.textContent || tmp.innerText || '';
+  }
+
+  const handleEditCategory = (row) => {
+    const fields = [
+      {
+        name: 'image',
+        type: 'image',
+        label: 'Category Image'
+      },
+      {
+        name: 'name',
+        label: 'Category Name',
+        type: 'text',
+        required: true,
+      },
+      {
+        name: 'description',
+        label: 'Description',
+        type: 'textarea',
+        rows: 3
+      }
+    ]
+
+    setModalConfig({
+      title: 'Edit Category',
+      fields,
+      initialData: {
+        id: row.id,
+        name: row.name,
+        description: stripHtmlTags(row.description),
+        image: row.image
+      },
+      type: 'category',
+      onSave: async (formData) => {
+        setSaving(true)
+        try {
+          const data = new FormData()
+          data.append('name', formData.name)
+          data.append('description', formData.descrition)
+
+          if (formData.image instanceof File) {
+            data.append('category_image', formData.image)
+          }
+
+          const response = await api.post('/api/admin/categories/${row.id}', data, {
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
+          })
+
+          console.log('Category upodated:', response.data)
+          await fetchCategories()
+          setModalOpen(false)
+        } catch (err) {
+          console.error('Error updateing category;', err)
+          alert('Failed to update category')
+        } finally {
+          setSaving(false)
+        }
+      }
+    })
+    setModalOpen(true)
+    console.log('Edit category:', row)
+  }
+
   const categoryColumns = [
     { key: 'image', label: 'Image' },
     { key: 'name', label: 'Name' },
     { key: 'description', label: 'Description' },
+    { key: 'action', label: 'Action' }
   ]
 
   const subCategoryColumns = [
@@ -93,6 +177,42 @@ function Category() {
 
   const handleAddNew = () => {
     if (value === 0) {
+      //Add new Category
+      const fields = [
+        { name: 'image', type: 'image', label: 'Category Image' },
+        { name: 'name', label: 'Category Name', type: 'text', required: true },
+        { name: 'description', label: 'Description', type: 'textarea', rows: 3 }
+      ]
+
+      setModalConfig({
+        title: 'Add New Category',
+        fields,
+        initialData: {},
+        type: 'category',
+        onSAve: async (formData) => {
+          setSaving(true)
+          try {
+            const data = new FormData()
+            data.append('name', formData.name)
+            data.append('description', formData.description)
+            if (formData.image instanceof File) {
+              data.append('category_image', formData.image)
+            }
+            const response = await api.post('/api/admin/categories', data, {
+              headers: { 'Content-Type': 'multiple/form-data' }
+            })
+            console.log('Category added:', response.data)
+            await fetchCategories()
+            setModalOpen(false)
+          } catch (err) {
+            console.error('Error adding category:', err)
+            alert('Failed to add category')
+          } finally {
+            setSaving(false)
+          }
+        }
+      })
+      setModalOpen(true)
       console.log('Add new category')
     } else {
       console.log('Add new sub-category')
@@ -138,6 +258,7 @@ function Category() {
             <CustomTable
               columns={categoryColumns}
               rows={categoryRows}
+              onEdit={handleEditCategory}
             />
           )}
         </CustomTabPanel>
@@ -152,6 +273,18 @@ function Category() {
             />
           )}
         </CustomTabPanel>
+
+
+        {/* Dunamic Edit Modal */}
+        <EditModal
+          open={modalOpen}
+          onClose={() => setModalOpen(false)}
+          onSave={modalConfig.onSave}
+          title={modalConfig.title}
+          fields={modalConfig.fields}
+          initialData={modalConfig.initialData}
+          saving={saving}
+        />
 
       </Box>
     </>
