@@ -1,8 +1,9 @@
 import { Add, CategoryOutlined } from '@mui/icons-material'
 import { Box, Button, Tab, Tabs, Typography } from '@mui/material'
 import React, { useEffect, useState } from 'react'
-import CustomTable from '../components/CustomTable'
-import api from '../services/api'
+import CustomTable from '../../components/CustomTable'
+import api from '../../services/api'
+import { useNavigate } from 'react-router-dom'
 
 function CustomTabPanel({ children, value, index }) {
   return value === index && (
@@ -14,6 +15,7 @@ function CustomTabPanel({ children, value, index }) {
 
 function Product() {
 
+  const navigate = useNavigate()
   const [value] = useState(0)
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
@@ -48,6 +50,10 @@ function Product() {
     if(window.confirm(`Are you sure you want to delete ${row.name}?`)){
 
     }
+  }
+
+  const handleAddNewProduct = () => {
+    navigate('add-product')
   }
 
 
@@ -90,6 +96,7 @@ function Product() {
           <Button
             variant='contained'
             startIcon={<Add />}
+            onClick={handleAddNewProduct}
             sx={{
               textTransform: 'none',
               borderRadius: 2,

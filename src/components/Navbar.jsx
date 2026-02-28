@@ -31,7 +31,8 @@ function Navbar() {
         '/': 'Dashboard',
         '/category': 'Category',
         '/product': 'Product',
-        '/settings': 'Settings'
+        '/settings': 'Settings',
+        '/product/add-product':'Add New Product'
     }
 
     const title = pageTitles[location.pathname] || 'Dashboard'; // fallback

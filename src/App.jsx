@@ -5,9 +5,10 @@ import Dashboard from './pages/dashboard/Dashboard'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Layout from './layout/Layout'
 import Category from './pages/category/Category'
-import Product from './pages/Product';
+import Product from './pages/product/Product';
 import Setting from './pages/Setting';
 import Login from './pages/login/Login';
+import AddProduct from './pages/product/AddProduct';
 
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
             <Route path='category' element= {<Category/>}></Route>
             <Route path="product" element={<Product />} />
             <Route path='settings' element={<Setting />} />
+            <Route path='product/add-product' element={<AddProduct />} />
           </Route>
         </Routes>
       </Router>
